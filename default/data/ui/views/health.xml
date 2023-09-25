@@ -2,7 +2,7 @@
   <label>Health</label>
   <search id="baseSearch">
     <query>index=_internal source=*TA-iphub_api.log eventCount=*
-| stats count sum(eventCount) as totalEvents, sum(ipHubCalls) as totalAPICalls, sum(cachedEntries) as totalCacheHits</query>
+| stats count sum(eventCount) as totalEvents, sum(spurCalls) as totalAPICalls, sum(cachedEntries) as totalCacheHits</query>
     <earliest>$token_time.earliest$</earliest>
     <latest>$token_time.latest$</latest>
     <sampleRatio>1</sampleRatio>
