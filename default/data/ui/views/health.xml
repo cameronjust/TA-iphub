@@ -1,0 +1,96 @@
+<form version="1.1">
+  <label>Health</label>
+  <search id="baseSearch">
+    <query>index=_internal source=*TA-iphub_api.log eventCount=*
+| stats count sum(eventCount) as totalEvents, sum(ipHubCalls) as totalAPICalls, sum(cachedEntries) as totalCacheHits</query>
+    <earliest>$token_time.earliest$</earliest>
+    <latest>$token_time.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="token_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="token_loglevel">
+      <label>Log Level View</label>
+      <choice value="ERROR">ERROR</choice>
+      <choice value="*">All</choice>
+      <choice value="DEBUG">DEBUG</choice>
+      <choice value="INFO">INFO</choice>
+      <default>ERROR</default>
+      <initialValue>ERROR</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Search command calls</title>
+        <search base="baseSearch">
+          <query>fields count</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Total IP addresses processed</title>
+        <search base="baseSearch">
+          <query>fields totalEvents</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>REST API calls made</title>
+        <search base="baseSearch">
+          <query>fields totalAPICalls</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Cache hits</title>
+        <search base="baseSearch">
+          <query>fields totalCacheHits</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <event>
+        <title>API Logs for $token_loglevel|$</title>
+        <search>
+          <query>index=_internal source=*TA-iphub_api.log $token_loglevel$</query>
+          <earliest>$token_time.earliest$</earliest>
+          <latest>$token_time.latest$</latest>
+        </search>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+    <panel>
+      <event>
+        <title>Setup Handler logs for $token_loglevel|s$</title>
+        <search>
+          <query>index=_internal source=*TA-iphub_setuphandler.log $token_loglevel$</query>
+          <earliest>$token_time.earliest$</earliest>
+          <latest>$token_time.latest$</latest>
+        </search>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+</form>

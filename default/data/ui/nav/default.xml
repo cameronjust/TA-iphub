@@ -1,0 +1,5 @@
+<nav search_view="search">
+  <view name="search"/>
+  <view name="setup_page"/>
+  <view name="health"/>
+</nav>

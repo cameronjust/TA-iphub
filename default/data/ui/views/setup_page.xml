@@ -1,0 +1,25 @@
+<dashboard version="1.1" script="setup_page.js" stylesheet="setup_page.css">
+	<label>Setup</label>
+	<row>
+		<panel>
+			<html>
+				<h1>IPHub Addon Configuration</h1>
+				<form>
+					<div class="ck_div_input_fields">
+						<!-- form fields -->
+						<div name="ck_input">
+							<p class="helpText"><br />IPHub API Key : <input autocomplete="off" size="20" name="iphub_api_key" id="iphub_api_key" value=""/></p>
+							<p class="helpText"><br />Proxy Settings : <input autocomplete="off" size="20" name="proxy_settings" id="proxy_settings" value=""/></p>
+							<p class="helpText"><br />Use KVStore Cache : <input type="checkbox" name="iphub_use_kvstore"  value="1"/></p>
+							<p class="helpText"><br />Debug Logging : <input type="checkbox" name="iphub_debug_logging" value="1"/></p>
+						</div>						
+					</div>
+					<div id="ck_form_buttons">
+						<button type="button" id="ck_cancel_button"> Cancel </button> 
+						<button type="button" id="ck_submit_button"> Save </button>
+					</div>
+				</form>
+			</html>
+		</panel>
+	</row>
+</dashboard>

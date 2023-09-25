@@ -1,0 +1,45 @@
+[iphub/myweblogs]
+owner = admin
+version = 8.0.5
+modtime = 1600150250.440979000
+
+[hubtown/iphub]
+owner = admin
+version = 8.0.5
+modtime = 1601256158.168515000
+
+[app/install]
+version = 8.2.6
+modtime = 1653973790.001300000
+
+[app/install/install_source_checksum]
+version = 8.0.0
+modtime = 1601426109.146316000
+
+[transforms/iphub_tester]
+access = read : [ * ], write : [ admin ]
+export = system
+owner = admin
+version = 8.0.5
+modtime = 1601447932.531737000
+
+[collections/iphub_cache]
+access = read : [ * ], write : [ admin, power ]
+export = system
+owner = nobody
+version = 8.0.5
+modtime = 1602032658.604628000
+
+[iphub/iphub_config]
+owner = admin
+version = 8.2.6
+modtime = 1653973789.983760000
+
+[views/health]
+version = 8.2.6
+modtime = 1653968903.579047000
+
+[passwords/credential%3ATA-iphub%3Aiphub_api_key%3A]
+owner = admin
+version = 8.2.6
+modtime = 1653973789.967492000
