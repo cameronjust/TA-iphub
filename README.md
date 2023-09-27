@@ -11,7 +11,7 @@ This addon provides a custom search command for interracting with IpHub APIs.
 Ref: https://iphub.info/
 
 * Author: Cameron Just
-* Version: 1.1.6
+* Version: 1.1.7
 * Splunkbase URL: n/a
 * Source type(s): n/a
 * Has index-time operations: No
@@ -69,6 +69,7 @@ https://192.168.64.60:8089/servicesNS/nobody/TA-iphub/configs/conf-iphub/iphub_c
 * 1.1.4 - Updated Splunklib and fixed some python upgrade readiness issues (2022-06-07) - https://github.com/splunk/splunk-sdk-python
 * 1.1.5 - Added additonal exception checking and raising to Splunk GUI for issues (2022-06-08)
 * 1.1.6 - Fixed a bug with the proxy server configs (2023-09-26)
+* 1.1.7 - Added more detailed API error detection for bad API keys. Also added more proxy server checks and warnings in GUI (2023-09-26)
 
 ## ToDo
 

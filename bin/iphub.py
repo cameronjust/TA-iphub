@@ -169,12 +169,21 @@ class iphubCommand(StreamingCommand):
                             else:
                                 self.appLogger.error("%s,section=ProxyCheck,message=Proxy server test connection to %s failed. Not setting a proxy server." % (utils.fileFunctionLineNumber(),proxy_server))
                                 self.proxies = {}
-                        except Exception:
+                        
+                        except requests.exceptions.ProxyError as proxy_err:
+                            self.appLogger.error("%s,section=ProxyCheck,message=Proxy error %s." % (utils.fileFunctionLineNumber(), proxy_err))
+
+                            if '407' in str(proxy_err):
+                                raise Exception("Proxy test failed due to authorisation required for proxy server. Not yet supported by addon. Only workaround is to include username and password in the proxy URL like this http://proxy_user:proxy_password@my.proxy.server.com:8443")
+                            else:
+                                raise Exception("Proxy test failed due to authorisation required for proxy server. Proxy error was %s" % proxy_err)
+
+                        except Exception as e:
                             self.appLogger.error("%s,section=ProxyCheck,message=Proxy server test connection to %s failed. Will skip use of proxy. Exception %s." % (utils.fileFunctionLineNumber(),proxy_server, utils.detailedException()))
-                            self.proxies = {}
-            except Exception:
+                            raise e
+            except Exception as e:
                 self.appLogger.error("%s,section=ProxyCheck,message=Exception %s." % (utils.fileFunctionLineNumber(),utils.detailedException()))
-                self.proxies = {}
+                raise e
                             
         except Exception as e:
             self.appLogger.error("%s,message=Exception %s." % (utils.fileFunctionLineNumber(),utils.detailedException()))
@@ -333,18 +342,41 @@ class iphubCommand(StreamingCommand):
                                 event["iphub_cached"] = 0
 
                                 # Poll API if a valid IP address
-                                # curl http://v2.api.iphub.info/ip/118.209.251.2 -H "X-Key: MTA0MzY6U0xxxxxxxxxxxxxMktpZGpaT2xIRTM="
+                                # curl http://v2.api.iphub.info/ip/118.209.251.2 -H "X-Key: MTxxxxxxxxxxxxxxxxxxxxxxxxxRTMTM="
                                 headers = {'X-Key': self.API_key}
 
                                 url = 'https://v2.api.iphub.info/ip/%s' % (ip)
                                 self.appLogger.debug("%s,section=iphubCall,requestUrl=%s" % (utils.fileFunctionLineNumber(), url))
+    
+                                try:
+                                    result = session.get(url, headers=headers, verify=False)
+                                    result_json = json.loads(result.text)
 
-                                result = session.get(url, headers=headers, verify=False)
-                                result_json = json.loads(result.text)
+                                    self.appLogger.debug("%s,section=reponseParsing,status=%d,message=Call returned" % (utils.fileFunctionLineNumber(), result.status_code))
+                                
+                                    # Check the result status code
+                                    if result.status_code == 200:
+                                        # Request was successful, handle the result data
+                                        self.appLogger.debug("%s,section=reponseParsing,payload=%s" % (utils.fileFunctionLineNumber(), result_json))
+                                        
+                                        print(result.text)
+                                    elif result.status_code == 401 or result.status_code == 403 :
+                                        # Handle a 401 Unauthorised error
+                                        self.appLogger.error("%s,section=reponseParsing,401 unauthorised error. Check your API key" % (utils.fileFunctionLineNumber()))
+                                        raise Exception("%d unauthorised/forbidden error returned from IPHub. Check API Key in setup page." % result.status_code)
+                                    elif result.status_code >= 400:
+                                        self.appLogger.error("%s,section=reponseParsing,%d response error with payload %s" % (utils.fileFunctionLineNumber(), result.status_code, result_json))
+                                        raise Exception("%d error returned from IPHub. Check _internal Splunk logs." % result.status_code)
 
-                                self.appLogger.debug("%s,section=reponseParsing,status=%d,message=Call returned" % (utils.fileFunctionLineNumber(), result.status_code))
-                                self.appLogger.debug("%s,section=reponseParsing,payload=%s" % (utils.fileFunctionLineNumber(), result_json))
+                                except requests.exceptions.RequestException as e:
+                                    # Handle network or other request-related errors
+                                    self.appLogger.error("%s,section=reponseParsing,Unexpected Network Request Error from API call %s" % (utils.fileFunctionLineNumber(), utils.detailedException()))
+                                    raise e
 
+                                except Exception as e:
+                                    self.appLogger.error("%s,section=reponseParsing,Unexpected Error during API call %s" % (utils.fileFunctionLineNumber(), utils.detailedException()))
+                                    raise e
+    
                                 for key in result_json:
 
                                     # Skip hostname field as we already have that
